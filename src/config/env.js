@@ -13,7 +13,7 @@ module.exports = cleanEnv(process.env, {
   DB_POOL_MIN:         num({ default: 2 }),
   DB_POOL_MAX:         num({ default: 20 }),
 
-  REDIS_URL:           url({ default: 'redis://localhost:6379' }),
+  // REDIS_URL:           url({ default: 'redis://localhost:6379' }),
 
   JWT_ACCESS_SECRET:   str(),
   JWT_REFRESH_SECRET:  str(),

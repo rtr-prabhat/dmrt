@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User, Role, UserRole, RefreshToken } = require('../models');
-const redis = require('../config/redis');
+// const redis = require('../config/redis');
 const env = require('../config/env');
 const { AppError } = require('../utils/AppError');
 
@@ -96,8 +96,8 @@ const logout = async ({ accessToken, rawRefreshToken, userId }) => {
     const p = jwt.decode(accessToken);
     if (p && p.exp) ttl = Math.max(1, p.exp - Math.floor(Date.now() / 1000));
   } catch {}
-  await redis.setex(`bl:${accessToken}`, ttl, '1');
-  await redis.del(`user_perms:${userId}`);
+  // await redis.setex(`bl:${accessToken}`, ttl, '1');
+  // await redis.del(`user_perms:${userId}`);
 
   if (rawRefreshToken) {
     const tokenHash = hashToken(rawRefreshToken);
@@ -111,8 +111,8 @@ const logoutAll = async ({ accessToken, userId }) => {
     const p = jwt.decode(accessToken);
     if (p && p.exp) ttl = Math.max(1, p.exp - Math.floor(Date.now() / 1000));
   } catch {}
-  await redis.setex(`bl:${accessToken}`, ttl, '1');
-  await redis.del(`user_perms:${userId}`);
+  // await redis.setex(`bl:${accessToken}`, ttl, '1');
+  // await redis.del(`user_perms:${userId}`);
   await RefreshToken.update({ revokedAt: new Date() }, { where: { userId, revokedAt: null } });
 };
 

@@ -1,5 +1,5 @@
 const jwt      = require('jsonwebtoken');
-const redis    = require('../config/redis');
+// const redis    = require('../config/redis');
 const env      = require('../config/env');
 const { AppError } = require('../utils/AppError');
 const asyncWrap    = require('../utils/asyncWrap');
@@ -60,8 +60,8 @@ module.exports = asyncWrap(async function authenticate(req, _res, next) {
   const token = header.slice(7);
 
   // O(1) blacklist check before expensive verify
-  const isBlacklisted = await redis.get(`bl:${token}`);
-  if (isBlacklisted) return next(new AppError('Token has been revoked', 401));
+  // const isBlacklisted = await redis.get(`bl:${token}`);
+  // if (isBlacklisted) return next(new AppError('Token has been revoked', 401));
 
   let payload;
   try {
@@ -72,17 +72,17 @@ module.exports = asyncWrap(async function authenticate(req, _res, next) {
   }
 
   const cacheKey = `user_perms:${payload.sub}`;
-  let userData = await redis.get(cacheKey);
+  // let userData = await redis.get(cacheKey);
 
-  if (userData) {
-    userData = JSON.parse(userData);
-  } else {
-    userData = await fetchUserWithPermissions(payload.sub);
-    if (!userData || !userData.isActive) {
-      return next(new AppError('Account not found or deactivated', 401));
-    }
-    await redis.setex(cacheKey, USER_CACHE_TTL, JSON.stringify(userData));
-  }
+  // if (userData) {
+  //   userData = JSON.parse(userData);
+  // } else {
+  //   userData = await fetchUserWithPermissions(payload.sub);
+  //   if (!userData || !userData.isActive) {
+  //     return next(new AppError('Account not found or deactivated', 401));
+  //   }
+  //   await redis.setex(cacheKey, USER_CACHE_TTL, JSON.stringify(userData));
+  // }
 
   req.user  = userData;
   req.token = token;
