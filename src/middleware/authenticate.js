@@ -1,11 +1,55 @@
-const jwt = require('jsonwebtoken');
-const redis = require('../config/redis');
-const env = require('../config/env');
+const jwt      = require('jsonwebtoken');
+const redis    = require('../config/redis');
+const env      = require('../config/env');
 const { AppError } = require('../utils/AppError');
-const asyncWrap = require('../utils/asyncWrap');
-const UserRepository = require('../modules/users/users.repository');
+const asyncWrap    = require('../utils/asyncWrap');
+const { User, Role, Permission } = require('../models');
 
 const USER_CACHE_TTL = 300; // 5 minutes
+
+async function fetchUserWithPermissions(userId) {
+  const user = await User.findByPk(userId, {
+    attributes: ['id', 'fullName', 'email', 'isActive'],
+    include: [{
+      model: Role,
+      as: 'roles',
+      attributes: ['name'],
+      through: { attributes: [] },
+      include: [{
+        model: Permission,
+        as: 'permissions',
+        attributes: ['resource', 'action'],
+        through: { attributes: [] },
+      }],
+    }],
+  });
+
+  if (!user) return null;
+
+  const permSet = new Set();
+  const permissions = [];
+  const roles = [];
+
+  for (const role of user.roles) {
+    roles.push(role.name);
+    for (const perm of role.permissions) {
+      const key = `${perm.resource}:${perm.action}`;
+      if (!permSet.has(key)) {
+        permSet.add(key);
+        permissions.push({ resource: perm.resource, action: perm.action });
+      }
+    }
+  }
+
+  return {
+    id:       user.id,
+    fullName: user.fullName,
+    email:    user.email,
+    isActive: user.isActive,
+    roles,
+    permissions,
+  };
+}
 
 module.exports = asyncWrap(async function authenticate(req, _res, next) {
   const header = req.headers.authorization;
@@ -27,15 +71,14 @@ module.exports = asyncWrap(async function authenticate(req, _res, next) {
     return next(new AppError(msg, 401));
   }
 
-  // Hydrate permissions from Redis cache, fall back to DB
   const cacheKey = `user_perms:${payload.sub}`;
   let userData = await redis.get(cacheKey);
 
   if (userData) {
     userData = JSON.parse(userData);
   } else {
-    userData = await UserRepository.findWithPermissions(payload.sub);
-    if (!userData || !userData.is_active) {
+    userData = await fetchUserWithPermissions(payload.sub);
+    if (!userData || !userData.isActive) {
       return next(new AppError('Account not found or deactivated', 401));
     }
     await redis.setex(cacheKey, USER_CACHE_TTL, JSON.stringify(userData));

@@ -1,22 +1,14 @@
-const express = require('express');
-const helmet = require('helmet');
-const cors = require('cors');
-const pinoHttp = require('pino-http');
-const rateLimit = require('express-rate-limit');
+const express    = require('express');
+const helmet     = require('helmet');
+const cors       = require('cors');
+const pinoHttp   = require('pino-http');
+const rateLimit  = require('express-rate-limit');
 
-const env = require('./config/env');
-const logger = require('./utils/logger');
+const env          = require('./config/env');
+const logger       = require('./utils/logger');
 const errorHandler = require('./middleware/errorHandler');
-const authenticate = require('./middleware/authenticate');
 const { AppError } = require('./utils/AppError');
-
-// Module routers
-const authRouter       = require('./modules/auth/auth.router');
-const usersRouter      = require('./modules/users/users.router');
-const categoriesRouter = require('./modules/categories/categories.router');
-const productsRouter   = require('./modules/products/products.router');
-const warehousesRouter = require('./modules/warehouses/warehouses.router');
-const dashboardRouter  = require('./modules/dashboard/dashboard.router');
+const apiRouter    = require('./routes/index');
 
 const app = express();
 
@@ -57,21 +49,13 @@ const authLimiter = rateLimit({
   message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many auth attempts' } },
 });
 
-// ── Routes ────────────────────────────────────────────────────
-const API = '/api/v1';
+// Apply auth rate limiter only to auth routes
+app.use('/api/v1/auth', authLimiter);
 
-app.use(`${API}/auth`,       authLimiter, authRouter);
+// ── API Routes ────────────────────────────────────────────────
+app.use('/api/v1', apiRouter);
 
-// All routes below this line require a valid JWT
-app.use(authenticate);
-
-app.use(`${API}/users`,      usersRouter);
-app.use(`${API}/categories`, categoriesRouter);
-app.use(`${API}/products`,   productsRouter);
-app.use(`${API}/warehouses`, warehousesRouter);
-app.use(`${API}/dashboard`,  dashboardRouter);
-
-// ── Health check (no auth required) ──────────────────────────
+// ── Health check ──────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 // ── 404 handler ───────────────────────────────────────────────
