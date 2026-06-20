@@ -13,32 +13,57 @@ const moveToCartSchema = Joi.object({
 });
 
 const get = asyncWrap(async (req, res) => {
-  const data = await wishlistService.get(req.user.id);
-  res.json({ success: true, data });
+  try {
+    const data = await wishlistService.get(req.user.id);
+    res.json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const addItem = asyncWrap(async (req, res) => {
-  const { error, value } = addItemSchema.validate(req.body);
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
-  const data = await wishlistService.addItem(req.user.id, value.productId);
-  res.status(201).json({ success: true, data });
+  try {
+    const { error, value } = addItemSchema.validate(req.body);
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+    const data = await wishlistService.addItem(req.user.id, value.productId);
+    res.status(201).json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const removeItem = asyncWrap(async (req, res) => {
-  const data = await wishlistService.removeItem(req.user.id, req.params.productId);
-  res.json({ success: true, data });
+  try {
+    const data = await wishlistService.removeItem(req.user.id, req.params.productId);
+    res.json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const clear = asyncWrap(async (req, res) => {
-  await wishlistService.clear(req.user.id);
-  res.json({ success: true, data: { message: 'Wishlist cleared' } });
+  try {
+    await wishlistService.clear(req.user.id);
+    res.json({ success: true, data: { message: 'Wishlist cleared' } });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const moveToCart = asyncWrap(async (req, res) => {
-  const { error, value } = moveToCartSchema.validate(req.body);
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
-  const data = await wishlistService.moveToCart(req.user.id, req.params.productId, value);
-  res.json({ success: true, data });
+  try {
+    const { error, value } = moveToCartSchema.validate(req.body);
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+    const data = await wishlistService.moveToCart(req.user.id, req.params.productId, value);
+    res.json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 module.exports = { get, addItem, removeItem, clear, moveToCart };

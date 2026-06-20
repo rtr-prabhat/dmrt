@@ -19,6 +19,7 @@ module.exports = function errorHandler(err, req, res, _next) {
     error: {
       code:    err.code ?? 'INTERNAL_SERVER_ERROR',
       message: isOperational ? err.message : 'An unexpected error occurred',
+      statusCode,
       ...(env.NODE_ENV === 'development' && { stack: err.stack }),
     },
   });

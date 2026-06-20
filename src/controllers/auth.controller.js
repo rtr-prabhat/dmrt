@@ -20,43 +20,68 @@ const refreshSchema = Joi.object({
 });
 
 const register = asyncWrap(async (req, res) => {
-  const { error, value } = registerSchema.validate(req.body, { abortEarly: true });
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+  try {
+    const { error, value } = registerSchema.validate(req.body, { abortEarly: true });
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
-  const result = await authService.register(value);
-  res.status(201).json({ success: true, data: result });
+    const result = await authService.register(value);
+    res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const login = asyncWrap(async (req, res) => {
-  const { error, value } = loginSchema.validate(req.body, { abortEarly: true });
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+  try {
+    const { error, value } = loginSchema.validate(req.body, { abortEarly: true });
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
-  const result = await authService.login({
-    ...value,
-    userAgent: req.headers['user-agent'],
-    ipAddress: req.ip,
-  });
-  res.status(200).json({ success: true, data: result });
+    const result = await authService.login({
+      ...value,
+      userAgent: req.headers['user-agent'],
+      ipAddress: req.ip,
+    });
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const refresh = asyncWrap(async (req, res) => {
-  const { error, value } = refreshSchema.validate(req.body, { abortEarly: true });
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+  try {
+    const { error, value } = refreshSchema.validate(req.body, { abortEarly: true });
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
-  const result = await authService.refresh({ rawRefreshToken: value.refreshToken });
-  res.status(200).json({ success: true, data: result });
+    const result = await authService.refresh({ rawRefreshToken: value.refreshToken });
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const logout = asyncWrap(async (req, res) => {
-  const rawRefreshToken = req.body?.refreshToken || null;
-  
-  await authService.logout({ accessToken: req.token, rawRefreshToken, userId: req.user.id });
-  res.status(200).json({ success: true, data: { message: 'Logged out successfully' } });
+  try {
+    const rawRefreshToken = req.body?.refreshToken || null;
+    
+    await authService.logout({ accessToken: req.token, rawRefreshToken, userId: req.user.id });
+    res.status(200).json({ success: true, data: { message: 'Logged out successfully' } });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const logoutAll = asyncWrap(async (req, res) => {
-  await authService.logoutAll({ accessToken: req.token, userId: req.user.id });
-  res.status(200).json({ success: true, data: { message: 'Logged out from all devices' } });
+  try {
+    await authService.logoutAll({ accessToken: req.token, userId: req.user.id });
+    res.status(200).json({ success: true, data: { message: 'Logged out from all devices' } });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 module.exports = { register, login, refresh, logout, logoutAll };

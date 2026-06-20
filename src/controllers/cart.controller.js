@@ -13,32 +13,57 @@ const updateItemSchema = Joi.object({
 });
 
 const getCart = asyncWrap(async (req, res) => {
-  const data = await cartService.getCart(req.user.id);
-  res.json({ success: true, data });
+  try {
+    const data = await cartService.getCart(req.user.id);
+    res.json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const addItem = asyncWrap(async (req, res) => {
-  const { error, value } = addItemSchema.validate(req.body);
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
-  const data = await cartService.addItem(req.user.id, value);
-  res.status(200).json({ success: true, data });
+  try {
+    const { error, value } = addItemSchema.validate(req.body);
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+    const data = await cartService.addItem(req.user.id, value);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const updateItem = asyncWrap(async (req, res) => {
-  const { error, value } = updateItemSchema.validate(req.body);
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
-  const data = await cartService.updateItem(req.user.id, req.params.itemId, value);
-  res.json({ success: true, data });
+  try {
+    const { error, value } = updateItemSchema.validate(req.body);
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+    const data = await cartService.updateItem(req.user.id, req.params.itemId, value);
+    res.json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const removeItem = asyncWrap(async (req, res) => {
-  const data = await cartService.removeItem(req.user.id, req.params.itemId);
-  res.json({ success: true, data });
+  try {
+    const data = await cartService.removeItem(req.user.id, req.params.itemId);
+    res.json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const clearCart = asyncWrap(async (req, res) => {
-  await cartService.clearCart(req.user.id);
-  res.json({ success: true, data: { message: 'Cart cleared' } });
+  try {
+    await cartService.clearCart(req.user.id);
+    res.json({ success: true, data: { message: 'Cart cleared' } });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 module.exports = { getCart, addItem, updateItem, removeItem, clearCart };

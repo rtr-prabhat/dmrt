@@ -38,46 +38,81 @@ const inventorySchema = Joi.object({
 });
 
 const list = asyncWrap(async (req, res) => {
-  const { error, value } = listSchema.validate(req.query);
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
-  const result = await warehouseService.list(value);
-  res.json({ success: true, ...result });
+  try {
+    const { error, value } = listSchema.validate(req.query);
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+    const result = await warehouseService.list(value);
+    res.json({ success: true, ...result });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const getById = asyncWrap(async (req, res) => {
-  const wh = await warehouseService.getById(parseInt(req.params.id));
-  res.json({ success: true, data: wh });
+  try {
+    const wh = await warehouseService.getById(parseInt(req.params.id));
+    res.json({ success: true, data: wh });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const create = asyncWrap(async (req, res) => {
-  const { error, value } = createSchema.validate(req.body);
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
-  const wh = await warehouseService.create(value);
-  res.status(201).json({ success: true, data: wh });
+  try {
+    const { error, value } = createSchema.validate(req.body);
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+    const wh = await warehouseService.create(value);
+    res.status(201).json({ success: true, data: wh });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const update = asyncWrap(async (req, res) => {
-  const { error, value } = updateSchema.validate(req.body);
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
-  const wh = await warehouseService.update(parseInt(req.params.id), value);
-  res.json({ success: true, data: wh });
+  try {
+    const { error, value } = updateSchema.validate(req.body);
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+    const wh = await warehouseService.update(parseInt(req.params.id), value);
+    res.json({ success: true, data: wh });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const remove = asyncWrap(async (req, res) => {
-  await warehouseService.remove(parseInt(req.params.id));
-  res.status(204).send();
+  try {
+    await warehouseService.remove(parseInt(req.params.id));
+    res.status(204).send();
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const getInventory = asyncWrap(async (req, res) => {
-  const inventory = await warehouseService.getInventory(parseInt(req.params.id));
-  res.json({ success: true, data: inventory });
+  try {
+    const inventory = await warehouseService.getInventory(parseInt(req.params.id));
+    res.json({ success: true, data: inventory });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const upsertInventory = asyncWrap(async (req, res) => {
-  const { error, value } = inventorySchema.validate(req.body);
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
-  const inventory = await warehouseService.upsertInventory(parseInt(req.params.id), value.items);
-  res.json({ success: true, data: inventory });
+  try {
+    const { error, value } = inventorySchema.validate(req.body);
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+    const inventory = await warehouseService.upsertInventory(parseInt(req.params.id), value.items);
+    res.json({ success: true, data: inventory });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 module.exports = { list, getById, create, update, remove, getInventory, upsertInventory };

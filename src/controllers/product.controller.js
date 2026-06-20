@@ -42,37 +42,62 @@ const updateSchema = Joi.object({
 });
 
 const list = asyncWrap(async (req, res) => {
-  const { error, value } = listQuerySchema.validate(req.query, { abortEarly: false, convert: true });
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+  try {
+    const { error, value } = listQuerySchema.validate(req.query, { abortEarly: false, convert: true });
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
-  const result = await productService.list(value);
-  res.json({ success: true, ...result });
+    const result = await productService.list(value);
+    res.json({ success: true, ...result });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const getById = asyncWrap(async (req, res) => {
-  const data = await productService.getById(req.params.id);
-  res.json({ success: true, data });
+  try {
+    const data = await productService.getById(req.params.id);
+    res.json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const create = asyncWrap(async (req, res) => {
-  const { error, value } = createSchema.validate(req.body, { abortEarly: false });
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+  try {
+    const { error, value } = createSchema.validate(req.body, { abortEarly: false });
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
-  const data = await productService.create(value);
-  res.status(201).json({ success: true, data });
+    const data = await productService.create(value);
+    res.status(201).json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const update = asyncWrap(async (req, res) => {
-  const { error, value } = updateSchema.validate(req.body, { abortEarly: false });
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+  try {
+    const { error, value } = updateSchema.validate(req.body, { abortEarly: false });
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
-  const data = await productService.update(req.params.id, value);
-  res.json({ success: true, data });
+    const data = await productService.update(req.params.id, value);
+    res.json({ success: true, data });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const remove = asyncWrap(async (req, res) => {
-  await productService.remove(req.params.id);
-  res.json({ success: true, data: null });
+  try {
+    await productService.remove(req.params.id);
+    res.json({ success: true, data: null });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 module.exports = { list, getById, create, update, remove };
