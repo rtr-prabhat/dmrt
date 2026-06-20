@@ -16,9 +16,13 @@ const create = async (userId, data) => {
 };
 
 const update = async (userId, id, data) => {
+  console.log(id,'iddddddddd',userId,'[[[[[[[[[[[[')
   const address = await Address.findOne({ where: { id, userId } });
   if (!address) throw new AppError('Address not found', 404, 'NOT_FOUND');
-  await address.update(data);
+  
+  console.log(address,'adressssssssssss')
+  await Address.update(data,{where:{id:address.id}})
+  // await address.update(data);
   return address;
 };
 

@@ -29,7 +29,7 @@ async function fetchUserWithPermissions(userId) {
   const permSet = new Set();
   const permissions = [];
   const roles = [];
-
+console.log(user,'userrrrrrrrrrrrrrrrrr permission')
   for (const role of user.roles) {
     roles.push(role.name);
     for (const perm of role.permissions) {
@@ -70,7 +70,7 @@ async function fetchUserWithPermissions(userId) {
     const msg = err.name === 'TokenExpiredError' ? 'Token expired' : 'Invalid token';
     return next(new AppError(msg, 401));
   }
-console.log(payload,'payloaddddddddddddddddddddddddddd')
+console.log(payload,'payloaddddddddddd')
   const cacheKey = `user_perms:${payload.sub}`;
   let userData = {}// await redis.get(cacheKey);
 

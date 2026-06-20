@@ -21,6 +21,7 @@ router.use('/cart',       cartRouter);
 router.use('/wishlist',   wishlistRouter);
 router.use('/orders',     orderRouter);
 router.use('/warehouses', warehouseRouter);
+
 router.use('/admin',      adminRouter);
 
 module.exports = router;

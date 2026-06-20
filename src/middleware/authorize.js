@@ -9,10 +9,11 @@ const { AppError } = require('../utils/AppError');
 function authorize(resource, action) {
   return function (req, _res, next) {
     const permissions = req.user?.permissions ?? [];
+    console.log(permissions,'permisssionnnnnnn')
     const allowed = permissions.some(
       (p) => p.resource === resource && p.action === action
     );
-
+console.log(allowed,'allowedddddddd')
     if (!allowed) {
       return next(
         new AppError(

@@ -54,7 +54,9 @@ const create = asyncWrap(async (req, res) => {
 
 const update = asyncWrap(async (req, res) => {
   try {
+    // console.log(req.body,'reqqqqq')
     const { error, value } = updateSchema.validate(req.body, { abortEarly: true });
+    // console.log(error,'rrrrrrrrrrrr')
     if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
     const address = await addressService.update(req.user.id, Number(req.params.id), value);
