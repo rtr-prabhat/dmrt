@@ -51,7 +51,7 @@ async function fetchUserWithPermissions(userId) {
   };
 }
 
-module.exports = asyncWrap(async function authenticate(req, _res, next) {
+  module.exports = asyncWrap(async function authenticate(req, _res, next) {
   const header = req.headers.authorization;
   if (!header || !header.startsWith('Bearer ')) {
     return next(new AppError('Missing or malformed Authorization header', 401));
@@ -70,14 +70,14 @@ module.exports = asyncWrap(async function authenticate(req, _res, next) {
     const msg = err.name === 'TokenExpiredError' ? 'Token expired' : 'Invalid token';
     return next(new AppError(msg, 401));
   }
-
+console.log(payload,'payloaddddddddddddddddddddddddddd')
   const cacheKey = `user_perms:${payload.sub}`;
-  // let userData = await redis.get(cacheKey);
+  let userData = {}// await redis.get(cacheKey);
 
   // if (userData) {
   //   userData = JSON.parse(userData);
   // } else {
-  //   userData = await fetchUserWithPermissions(payload.sub);
+    userData = await fetchUserWithPermissions(payload.sub);
   //   if (!userData || !userData.isActive) {
   //     return next(new AppError('Account not found or deactivated', 401));
   //   }

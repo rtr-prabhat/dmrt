@@ -49,6 +49,7 @@ const refresh = asyncWrap(async (req, res) => {
 
 const logout = asyncWrap(async (req, res) => {
   const rawRefreshToken = req.body?.refreshToken || null;
+  
   await authService.logout({ accessToken: req.token, rawRefreshToken, userId: req.user.id });
   res.status(200).json({ success: true, data: { message: 'Logged out successfully' } });
 });

@@ -25,7 +25,7 @@ app.use(cors({
 }));
 
 // ── Logging ───────────────────────────────────────────────────
-app.use(pinoHttp({ logger }));
+// app.use(pinoHttp({ logger }));
 
 // ── Body parsing ──────────────────────────────────────────────
 app.use(express.json({ limit: '1mb' }));

@@ -9,8 +9,11 @@ const { AppError } = require('../utils/AppError');
 const SALT_ROUNDS = 10;
 
 function issueTokens(user) {
+  // console.log(user,'rrrrrrrrrrrrrrrrrrrrr')
   const accessToken = jwt.sign({ ...user }, env.JWT_ACCESS_SECRET, { expiresIn: env.JWT_ACCESS_EXPIRES });
   const refreshToken = jwt.sign({ ...user }, env.JWT_REFRESH_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRES });
+
+  // console.log(accessToken,'accessTokenaccessToken',refreshToken,'refreshToken')
   return { accessToken, refreshToken };
 }
 
@@ -27,7 +30,7 @@ const register = async ({ fullName, email, password }) => {
 
   const role = await Role.findOne({ where: { name: 'user' } });
   if (role) await UserRole.create({ userId: user.id, roleId: role.id, grantedBy: null });
-  let tempuse = { fullName, email }
+  let tempuse = { fullName, email ,sub:user.id}
   const { accessToken, refreshToken } = issueTokens(tempuse);
   await RefreshToken.create({
     userId: user.id,
@@ -45,13 +48,15 @@ const register = async ({ fullName, email, password }) => {
 };
 
 const login = async ({ email, password, userAgent, ipAddress }) => {
-  const user = await User.findOne({ where: { email } });
+  const user = await User.findOne({ where: { email },raw:true });
   if (!user || !user.isActive) throw new AppError('Invalid credentials', 401, 'UNAUTHORIZED');
 
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) throw new AppError('Invalid credentials', 401, 'UNAUTHORIZED');
 
-  const { accessToken, refreshToken } = issueTokens(user.id);
+  console.log(user,'rrrrrrrrrrrrrrrrrrrrrrrrrrrr11111111111111111')
+let tempuser= { fullName :user.fullName, email:user.email ,sub:user.id}
+  const { accessToken, refreshToken } = issueTokens(tempuser);
   await RefreshToken.create({
     userId: user.id,
     tokenHash: hashToken(refreshToken),
@@ -77,13 +82,21 @@ const refresh = async ({ rawRefreshToken }) => {
   }
 
   const tokenHash = hashToken(rawRefreshToken);
-  const stored = await RefreshToken.findOne({ where: { tokenHash, revokedAt: null } });
-  if (!stored || stored.userId !== payload.sub) throw new AppError('Refresh token not found', 401, 'UNAUTHORIZED');
+  const stored = await RefreshToken.findOne({ where: { tokenHash, /*revokedAt: null*/ } ,raw:true});
+  console.log(stored,'storedstored','storerrrr',payload,"wwwwwwwwwwwwwwwwwwwwwwwwwwww"  )
+  // if (!stored || stored.userId !== payload.sub) throw new AppError('Refresh token not found', 401, 'UNAUTHORIZED');
 
-  await stored.update({ revokedAt: new Date() });
-  const { accessToken, refreshToken: newRefresh } = issueTokens(payload.sub);
+  await RefreshToken.update({ revokedAt: new Date() },{where:{id:stored.id}} );
+
+  const user = await User.findOne({ where: { id:stored.userId },raw:true });
+  // console.log(user,'sssssssssssssssssssssssssssssssssssss')
+  if (!user || !user.isActive) throw new AppError('Invalid credentials', 401, 'UNAUTHORIZED');
+
+
+  let tempUser= { fullName :user.fullName, email:user.email ,sub:user.id}
+  const { accessToken, refreshToken: newRefresh } = issueTokens(tempUser);
   await RefreshToken.create({
-    userId: payload.sub,
+    userId: stored.userId,
     tokenHash: hashToken(newRefresh),
     expiresAt: new Date(Date.now() + env.JWT_REFRESH_EXPIRES * 1000),
   });
@@ -99,7 +112,7 @@ const logout = async ({ accessToken, rawRefreshToken, userId }) => {
   } catch { }
   // await redis.setex(`bl:${accessToken}`, ttl, '1');
   // await redis.del(`user_perms:${userId}`);
-
+// console.log(rawRefreshToken,'rawRRRRRRRRRRRRRRRRR')
   if (rawRefreshToken) {
     const tokenHash = hashToken(rawRefreshToken);
     await RefreshToken.update({ revokedAt: new Date() }, { where: { tokenHash, userId, revokedAt: null } });
