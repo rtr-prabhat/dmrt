@@ -8,9 +8,9 @@ const { AppError } = require('../utils/AppError');
 
 const SALT_ROUNDS = 10;
 
-function issueTokens(userId) {
-  const accessToken = jwt.sign({ sub: userId }, env.JWT_ACCESS_SECRET, { expiresIn: env.JWT_ACCESS_EXPIRES });
-  const refreshToken = jwt.sign({ sub: userId }, env.JWT_REFRESH_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRES });
+function issueTokens(user) {
+  const accessToken = jwt.sign({ ...user }, env.JWT_ACCESS_SECRET, { expiresIn: env.JWT_ACCESS_EXPIRES });
+  const refreshToken = jwt.sign({ ...user }, env.JWT_REFRESH_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRES });
   return { accessToken, refreshToken };
 }
 
@@ -27,12 +27,13 @@ const register = async ({ fullName, email, password }) => {
 
   const role = await Role.findOne({ where: { name: 'user' } });
   if (role) await UserRole.create({ userId: user.id, roleId: role.id, grantedBy: null });
-
-  const { accessToken, refreshToken } = issueTokens(user.id);
+  let tempuse = { fullName, email }
+  const { accessToken, refreshToken } = issueTokens(tempuse);
   await RefreshToken.create({
     userId: user.id,
+    name: user.name,
     tokenHash: hashToken(refreshToken),
-    expiresAt: new Date(Date.now() + env.JWT_REFRESH_EXPIRES * 1000),
+    expiresAt: new Date(Date.now() + env.JWT_REFRESH_EXPIRES * 10000),
   });
 
   return {
@@ -95,7 +96,7 @@ const logout = async ({ accessToken, rawRefreshToken, userId }) => {
   try {
     const p = jwt.decode(accessToken);
     if (p && p.exp) ttl = Math.max(1, p.exp - Math.floor(Date.now() / 1000));
-  } catch {}
+  } catch { }
   // await redis.setex(`bl:${accessToken}`, ttl, '1');
   // await redis.del(`user_perms:${userId}`);
 
@@ -110,7 +111,7 @@ const logoutAll = async ({ accessToken, userId }) => {
   try {
     const p = jwt.decode(accessToken);
     if (p && p.exp) ttl = Math.max(1, p.exp - Math.floor(Date.now() / 1000));
-  } catch {}
+  } catch { }
   // await redis.setex(`bl:${accessToken}`, ttl, '1');
   // await redis.del(`user_perms:${userId}`);
   await RefreshToken.update({ revokedAt: new Date() }, { where: { userId, revokedAt: null } });

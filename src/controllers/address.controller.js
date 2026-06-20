@@ -30,34 +30,59 @@ const updateSchema = Joi.object({
 });
 
 const list = asyncWrap(async (req, res) => {
-  const addresses = await addressService.list(req.user.id);
-  res.status(200).json({ success: true, data: addresses });
+  try {
+    const addresses = await addressService.list(req.user.id);
+    res.status(200).json({ success: true, data: addresses });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const create = asyncWrap(async (req, res) => {
-  const { error, value } = createSchema.validate(req.body, { abortEarly: true });
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+  try {
+    const { error, value } = createSchema.validate(req.body, { abortEarly: true });
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
-  const address = await addressService.create(req.user.id, value);
-  res.status(201).json({ success: true, data: address });
+    const address = await addressService.create(req.user.id, value);
+    res.status(201).json({ success: true, data: address });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const update = asyncWrap(async (req, res) => {
-  const { error, value } = updateSchema.validate(req.body, { abortEarly: true });
-  if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
+  try {
+    const { error, value } = updateSchema.validate(req.body, { abortEarly: true });
+    if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
-  const address = await addressService.update(req.user.id, Number(req.params.id), value);
-  res.status(200).json({ success: true, data: address });
+    const address = await addressService.update(req.user.id, Number(req.params.id), value);
+    res.status(200).json({ success: true, data: address });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const remove = asyncWrap(async (req, res) => {
-  await addressService.remove(req.user.id, Number(req.params.id));
-  res.status(200).json({ success: true, data: { message: 'Address deleted successfully' } });
+  try {
+    await addressService.remove(req.user.id, Number(req.params.id));
+    res.status(200).json({ success: true, data: { message: 'Address deleted successfully' } });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 const setDefault = asyncWrap(async (req, res) => {
-  const address = await addressService.setDefault(req.user.id, Number(req.params.id));
-  res.status(200).json({ success: true, data: address });
+  try {
+    const address = await addressService.setDefault(req.user.id, Number(req.params.id));
+    res.status(200).json({ success: true, data: address });
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 });
 
 module.exports = { list, create, update, remove, setDefault };
