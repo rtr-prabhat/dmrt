@@ -1287,6 +1287,78 @@
                   ]
                 }
               }
+            },
+            {
+              "name": "Top Products",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/admin/dashboard/top-products",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "dashboard",
+                    "top-products"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Top Products Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"productId\": 1,\n      \"name\": \"Wireless Mouse\",\n      \"totalSold\": 150,\n      \"revenue\": \"3750.00\"\n    }\n  ]\n}"
+                }
+              ]
+            },
+            {
+              "name": "Low Stock Items",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/admin/dashboard/low-stock",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "dashboard",
+                    "low-stock"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Low Stock Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": [\n    {\n      \"productId\": 1,\n      \"productName\": \"Wireless Mouse\",\n      \"warehouseName\": \"Main NY Warehouse\",\n      \"quantity\": 5,\n      \"reorderLevel\": 10\n    }\n  ]\n}"
+                }
+              ]
             }
           ]
         },
@@ -1401,6 +1473,124 @@
                   ]
                 }
               }
+            },
+            {
+              "name": "Get User By ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    "1"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "User Details Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"fullName\": \"Jane Doe\",\n    \"email\": \"jane@example.com\",\n    \"isActive\": true,\n    \"roles\": [\n      {\n        \"id\": 1,\n        \"name\": \"user\"\n      }\n    ]\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update User",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Updated Name\",\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    "1"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "User Update Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"fullName\": \"Updated Name\",\n    \"email\": \"jane@example.com\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete User",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users/2",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    "2"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "User Deleted Success",
+                  "status": "No Content",
+                  "code": 204,
+                  "_postman_previewlanguage": "json",
+                  "body": ""
+                }
+              ]
             }
           ]
         },
@@ -1470,6 +1660,42 @@
                   ]
                 }
               }
+            },
+            {
+              "name": "Get Order Detail",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/admin/orders/10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "orders",
+                    "10"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Order Details Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 10,\n    \"userId\": 1,\n    \"addressId\": 1,\n    \"status\": \"pending\",\n    \"subtotal\": \"500.00\",\n    \"taxAmount\": \"90.00\",\n    \"total\": \"590.00\",\n    \"items\": [\n      {\n        \"id\": 1,\n        \"productName\": \"Sample Product\",\n        \"sku\": \"PROD-SMPL-01\",\n        \"quantity\": 2,\n        \"unitPrice\": \"250.00\"\n      }\n    ]\n  }\n}"
+                }
+              ]
             }
           ]
         },
@@ -1603,6 +1829,88 @@
                   ]
                 }
               }
+            },
+            {
+              "name": "Update Warehouse",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Warehouse\",\n  \"city\": \"New York\",\n  \"state\": \"NY\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/warehouses/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "warehouses",
+                    "1"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Warehouse Updated Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"Updated Warehouse\",\n    \"code\": \"WH-NY-01\",\n    \"city\": \"New York\",\n    \"state\": \"NY\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Warehouse",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/admin/warehouses/2",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "warehouses",
+                    "2"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Warehouse Deleted Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": null\n}"
+                }
+              ]
             }
           ]
         },
@@ -1715,6 +2023,250 @@
                   ]
                 }
               }
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Category Name\",\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/categories/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "categories",
+                    "1"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Category Updated Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"Updated Category Name\",\n    \"slug\": \"updated-category-name\",\n    \"isActive\": true\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/categories/3",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "categories",
+                    "3"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Category Deleted Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Product Name\",\n  \"basePrice\": 749.99,\n  \"status\": \"active\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "1"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Product Updated Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"Updated Product Name\",\n    \"basePrice\": \"749.99\",\n    \"status\": \"active\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/products/3",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "3"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Product Deleted Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": null\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Variation",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"skuSuffix\": \"256GB-BLACK\",\n  \"priceDelta\": 50.00,\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/products/1/variations/2",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "1",
+                    "variations",
+                    "2"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Variation Updated Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 2,\n    \"productId\": 1,\n    \"skuSuffix\": \"256GB-BLACK\",\n    \"priceDelta\": \"50.00\",\n    \"isActive\": true\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Variation",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/products/1/variations/3",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "1",
+                    "variations",
+                    "3"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Variation Deleted Success",
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "body": "{\n  \"success\": true,\n  \"data\": null\n}"
+                }
+              ]
             }
           ]
         }
