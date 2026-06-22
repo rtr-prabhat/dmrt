@@ -1,5 +1,5 @@
-require('dotenv').config();
-const { sequelize, Role, Permission, RolePermission } = require('../models');
+import 'dotenv/config';
+import { sequelize, Role, Permission, RolePermission } from '../models/index.js';
 
 const ROLE_PERMISSIONS = {
   admin: [

@@ -1,19 +1,16 @@
-const crypto = require('crypto');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { User, Role, UserRole, RefreshToken } = require('../models');
-// const redis = require('../config/redis');
-const env = require('../config/env');
-const { AppError } = require('../utils/AppError');
+import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { User, Role, UserRole, RefreshToken } from '../models/index.js';
+// import redis from '../config/redis.js';
+import env from '../config/env.js';
+import { AppError } from '../utils/AppError.js';
 
 const SALT_ROUNDS = 10;
 
 function issueTokens(user) {
-  // console.log(user,'rrrrrrrrrrrrrrrrrrrrr')
   const accessToken = jwt.sign({ ...user }, env.JWT_ACCESS_SECRET, { expiresIn: env.JWT_ACCESS_EXPIRES });
   const refreshToken = jwt.sign({ ...user }, env.JWT_REFRESH_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRES });
-
-  // console.log(accessToken,'accessTokenaccessToken',refreshToken,'refreshToken')
   return { accessToken, refreshToken };
 }
 
@@ -47,6 +44,7 @@ const register = async ({ fullName, email, password }) => {
       user: { id: user.id, fullName: user.fullName, email: user.email },
     };
   } catch (error) {
+    console.log('Error in auth.register:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Registration failed', 500);
   }
@@ -77,6 +75,7 @@ const login = async ({ email, password, userAgent, ipAddress }) => {
       user: { id: user.id, fullName: user.fullName, email: user.email },
     };
   } catch (error) {
+    console.log('Error in auth.login:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Login failed', 500);
   }
@@ -110,6 +109,7 @@ const refresh = async ({ rawRefreshToken }) => {
 
     return { accessToken, refreshToken: newRefresh, expiresIn: env.JWT_ACCESS_EXPIRES };
   } catch (error) {
+    console.log('Error in auth.refresh:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Token refresh failed', 500);
   }
@@ -122,6 +122,7 @@ const logout = async ({ accessToken, rawRefreshToken, userId }) => {
       await RefreshToken.update({ revokedAt: new Date() }, { where: { tokenHash, userId, revokedAt: null } });
     }
   } catch (error) {
+    console.log('Error in auth.logout:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Logout failed', 500);
   }
@@ -134,9 +135,10 @@ const logoutAll = async ({ accessToken, userId }) => {
     if (p && p.exp) ttl = Math.max(1, p.exp - Math.floor(Date.now() / 1000));
     await RefreshToken.update({ revokedAt: new Date() }, { where: { userId, revokedAt: null } });
   } catch (error) {
+    console.log('Error in auth.logoutAll:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Logout all failed', 500);
   }
 };
 
-module.exports = { register, login, refresh, logout, logoutAll };
+export { register, login, refresh, logout, logoutAll };

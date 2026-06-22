@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const Order = sequelize.define('Order', {
   id:        { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
@@ -19,4 +19,4 @@ const Order = sequelize.define('Order', {
   underscored: true,
 });
 
-module.exports = Order;
+export default Order;

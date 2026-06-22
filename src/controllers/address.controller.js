@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const addressService = require('../services/address.service');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
+import Joi from 'joi';
+import * as addressService from '../services/address.service.js';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
 
 const createSchema = Joi.object({
   label: Joi.string().max(50).default('Home'),
@@ -54,9 +54,7 @@ const create = asyncWrap(async (req, res) => {
 
 const update = asyncWrap(async (req, res) => {
   try {
-    // console.log(req.body,'reqqqqq')
     const { error, value } = updateSchema.validate(req.body, { abortEarly: true });
-    // console.log(error,'rrrrrrrrrrrr')
     if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
     const address = await addressService.update(req.user.id, Number(req.params.id), value);
@@ -87,4 +85,4 @@ const setDefault = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { list, create, update, remove, setDefault };
+export { list, create, update, remove, setDefault };

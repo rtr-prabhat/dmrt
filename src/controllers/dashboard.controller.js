@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
-const dashboardService = require('../services/dashboard.service');
+import Joi from 'joi';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
+import * as dashboardService from '../services/dashboard.service.js';
 
 const getSummary = asyncWrap(async (_req, res) => {
   try {
@@ -58,4 +58,4 @@ const getRevenue = asyncWrap(async (_req, res) => {
   }
 });
 
-module.exports = { getSummary, getOrdersByStatus, getTopProducts, getLowStock, getRevenue };
+export { getSummary, getOrdersByStatus, getTopProducts, getLowStock, getRevenue };

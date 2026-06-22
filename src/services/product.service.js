@@ -1,8 +1,8 @@
-const { Op } = require('sequelize');
-const { Product, ProductVariation, Category } = require('../models');
-const { AppError } = require('../utils/AppError');
-const { paginate, paginateMeta } = require('../utils/paginate');
-const slugify = require('../utils/slugify');
+import { Op } from 'sequelize';
+import { Product, ProductVariation, Category } from '../models/index.js';
+import { AppError } from '../utils/AppError.js';
+import { paginate, paginateMeta } from '../utils/paginate.js';
+import slugify from '../utils/slugify.js';
 
 const list = async ({ page, limit, categoryId, productType, status, search, minPrice, maxPrice } = {}) => {
   try {
@@ -38,6 +38,7 @@ const list = async ({ page, limit, categoryId, productType, status, search, minP
 
     return { data: rows, meta: paginateMeta(page, limit, count) };
   } catch (error) {
+    console.log('Error in product.list:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to list products', 500);
   }
@@ -54,6 +55,7 @@ const getById = async (id) => {
     if (!product) throw new AppError('Product not found', 404, 'NOT_FOUND');
     return product;
   } catch (error) {
+    console.log('Error in product.getById:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch product', 500);
   }
@@ -71,6 +73,7 @@ const _uniqueSlug = async (base, excludeId = null) => {
       slug = `${base}-${counter++}`;
     }
   } catch (error) {
+    console.log('Error in product._uniqueSlug:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to generate unique slug', 500);
   }
@@ -88,6 +91,7 @@ const create = async ({ categoryId, name, sku, description, basePrice, taxRate, 
 
     return Product.create({ categoryId, name, slug, sku, description, basePrice, taxRate, status, productType, meta });
   } catch (error) {
+    console.log('Error in product.create:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to create product', 500);
   }
@@ -112,6 +116,7 @@ const update = async (id, data) => {
     await product.update(updates);
     return product;
   } catch (error) {
+    console.log('Error in product.update:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to update product', 500);
   }
@@ -123,9 +128,10 @@ const remove = async (id) => {
     if (!product) throw new AppError('Product not found', 404, 'NOT_FOUND');
     await product.destroy();
   } catch (error) {
+    console.log('Error in product.remove:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to delete product', 500);
   }
 };
 
-module.exports = { list, getById, create, update, remove };
+export { list, getById, create, update, remove };

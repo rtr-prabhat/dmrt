@@ -1,7 +1,7 @@
-require('dotenv').config();
-const { cleanEnv, str, port, num, url } = require('envalid');
+import 'dotenv/config';
+import { cleanEnv, str, port, num, url } from 'envalid';
 
-module.exports = cleanEnv(process.env, {
+export default cleanEnv(process.env, {
   NODE_ENV:            str({ choices: ['development', 'test', 'production'], default: 'development' }),
   PORT:                port({ default: 3000 }),
 

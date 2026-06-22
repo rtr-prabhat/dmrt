@@ -1,4 +1,4 @@
-const { AppError } = require('../utils/AppError');
+import { AppError } from '../utils/AppError.js';
 
 /**
  * Joi validation middleware factory.
@@ -9,7 +9,7 @@ const { AppError } = require('../utils/AppError');
  * Validates req.body by default.
  * Pass source='query' or source='params' for other targets.
  */
-function validate(schema, source = 'body') {
+export default function validate(schema, source = 'body') {
   return (req, _res, next) => {
     const { error, value } = schema.validate(req[source], {
       abortEarly:   false,  // collect all errors, not just the first
@@ -27,5 +27,3 @@ function validate(schema, source = 'body') {
     next();
   };
 }
-
-module.exports = validate;

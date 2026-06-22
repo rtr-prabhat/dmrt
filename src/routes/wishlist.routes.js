@@ -1,12 +1,13 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authenticate = require('../middleware/authenticate');
-const c = require('../controllers/wishlist.controller');
 
-router.get('/', authenticate, c.get);
-router.post('/items', authenticate, c.addItem);
-router.delete('/items/:productId', authenticate, c.removeItem);
-router.delete('/', authenticate, c.clear);
-router.post('/items/:productId/move-to-cart', authenticate, c.moveToCart);
+import authenticate from '../middleware/authenticate.js';
+import { get, addItem, removeItem, clear, moveToCart } from '../controllers/wishlist.controller.js';
 
-module.exports = router;
+router.get('/',              authenticate, get);
+router.post('/items',        authenticate, addItem);
+router.delete('/items/:productId', authenticate, removeItem);
+router.delete('/',           authenticate, clear);
+router.post('/items/:productId/move-to-cart', authenticate, moveToCart);
+
+export default router;

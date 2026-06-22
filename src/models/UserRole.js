@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const UserRole = sequelize.define('UserRole', {
   id:        { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
@@ -12,4 +12,4 @@ const UserRole = sequelize.define('UserRole', {
   updatedAt:  false,
 });
 
-module.exports = UserRole;
+export default UserRole;

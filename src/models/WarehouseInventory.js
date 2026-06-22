@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const WarehouseInventory = sequelize.define('WarehouseInventory', {
   id:           { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
@@ -12,4 +12,4 @@ const WarehouseInventory = sequelize.define('WarehouseInventory', {
   underscored: true,
 });
 
-module.exports = WarehouseInventory;
+export default WarehouseInventory;

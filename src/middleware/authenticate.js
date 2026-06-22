@@ -1,9 +1,9 @@
-const jwt      = require('jsonwebtoken');
-// const redis    = require('../config/redis');
-const env      = require('../config/env');
-const { AppError } = require('../utils/AppError');
-const asyncWrap    = require('../utils/asyncWrap');
-const { User, Role, Permission } = require('../models');
+import jwt      from 'jsonwebtoken';
+// import redis    from '../config/redis.js';
+import env      from '../config/env.js';
+import { AppError } from '../utils/AppError.js';
+import asyncWrap    from '../utils/asyncWrap.js';
+import { User, Role, Permission } from '../models/index.js';
 
 const USER_CACHE_TTL = 300; // 5 minutes
 
@@ -29,7 +29,7 @@ async function fetchUserWithPermissions(userId) {
   const permSet = new Set();
   const permissions = [];
   const roles = [];
-console.log(user,'userrrrrrrrrrrrrrrrrr permission')
+
   for (const role of user.roles) {
     roles.push(role.name);
     for (const perm of role.permissions) {
@@ -51,17 +51,13 @@ console.log(user,'userrrrrrrrrrrrrrrrrr permission')
   };
 }
 
-  module.exports = asyncWrap(async function authenticate(req, _res, next) {
+export default asyncWrap(async function authenticate(req, _res, next) {
   const header = req.headers.authorization;
   if (!header || !header.startsWith('Bearer ')) {
     return next(new AppError('Missing or malformed Authorization header', 401));
   }
 
   const token = header.slice(7);
-
-  // O(1) blacklist check before expensive verify
-  // const isBlacklisted = await redis.get(`bl:${token}`);
-  // if (isBlacklisted) return next(new AppError('Token has been revoked', 401));
 
   let payload;
   try {
@@ -70,19 +66,11 @@ console.log(user,'userrrrrrrrrrrrrrrrrr permission')
     const msg = err.name === 'TokenExpiredError' ? 'Token expired' : 'Invalid token';
     return next(new AppError(msg, 401));
   }
-console.log(payload,'payloaddddddddddd')
-  const cacheKey = `user_perms:${payload.sub}`;
-  let userData = {}// await redis.get(cacheKey);
 
-  // if (userData) {
-  //   userData = JSON.parse(userData);
-  // } else {
-    userData = await fetchUserWithPermissions(payload.sub);
-  //   if (!userData || !userData.isActive) {
-  //     return next(new AppError('Account not found or deactivated', 401));
-  //   }
-  //   await redis.setex(cacheKey, USER_CACHE_TTL, JSON.stringify(userData));
-  // }
+  const cacheKey = `user_perms:${payload.sub}`;
+  let userData = {};
+
+  userData = await fetchUserWithPermissions(payload.sub);
 
   req.user  = userData;
   req.token = token;

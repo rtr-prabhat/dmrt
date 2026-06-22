@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const orderService = require('../services/order.service');
-const { AppError } = require('../utils/AppError');
-const asyncWrap = require('../utils/asyncWrap');
+import Joi from 'joi';
+import * as orderService from '../services/order.service.js';
+import { AppError } from '../utils/AppError.js';
+import asyncWrap from '../utils/asyncWrap.js';
 
 const createSchema = Joi.object({
   addressId: Joi.number().integer().positive().required(),
@@ -83,4 +83,4 @@ const cancel = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { create, list, getById, updateStatus, cancel };
+export { create, list, getById, updateStatus, cancel };

@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
-const categoryService = require('../services/category.service');
+import Joi from 'joi';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
+import * as categoryService from '../services/category.service.js';
 
 const listQuerySchema = Joi.object({
   page:     Joi.number().integer().min(1).default(1),
@@ -11,8 +11,10 @@ const listQuerySchema = Joi.object({
 
 const createSchema = Joi.object({
   name:      Joi.string().min(2).max(100).required(),
+  slug:      Joi.string().min(2).max(200),
   parentId:  Joi.number().integer().positive().allow(null).default(null),
   sortOrder: Joi.number().integer().min(0).default(0),
+  image:     Joi.string().max(500).allow(null, '').default(null),
 });
 
 const updateSchema = Joi.object({
@@ -20,6 +22,7 @@ const updateSchema = Joi.object({
   parentId:  Joi.number().integer().positive().allow(null),
   sortOrder: Joi.number().integer().min(0),
   isActive:  Joi.boolean(),
+  image:     Joi.string().max(500).allow(null, ''),
 });
 
 const list = asyncWrap(async (req, res) => {
@@ -67,7 +70,15 @@ const getDescendants = asyncWrap(async (req, res) => {
 
 const create = asyncWrap(async (req, res) => {
   try {
-    const { error, value } = createSchema.validate(req.body, { abortEarly: false });
+    const payload = {
+      name:     req.body.name,
+      slug:     req.body.slug,
+      parentId: req.body.parentId || null,
+      sortOrder: req.body.sortOrder || 0,
+      image:    req.file ? `/uploads/category/${req.file.filename}` : null,
+    };
+
+    const { error, value } = createSchema.validate(payload, { abortEarly: false });
     if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
     const data = await categoryService.create(value);
@@ -80,7 +91,10 @@ const create = asyncWrap(async (req, res) => {
 
 const update = asyncWrap(async (req, res) => {
   try {
-    const { error, value } = updateSchema.validate(req.body, { abortEarly: false });
+    const payload = { ...req.body };
+    if (req.file) payload.image = `/uploads/category/${req.file.filename}`;
+
+    const { error, value } = updateSchema.validate(payload, { abortEarly: false });
     if (error) throw new AppError(error.details[0].message, 422, 'VALIDATION_ERROR');
 
     const data = await categoryService.update(req.params.id, value);
@@ -101,4 +115,4 @@ const remove = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { list, tree, getById, getDescendants, create, update, remove };
+export { list, tree, getById, getDescendants, create, update, remove };

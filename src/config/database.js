@@ -1,6 +1,6 @@
-const { Sequelize } = require('sequelize');
-const env = require('./env');
-const logger = require('../utils/logger');
+import { Sequelize } from 'sequelize';
+import env from './env.js';
+import logger from '../utils/logger.js';
 
 const sequelize = new Sequelize(env.DB_NAME, env.DB_USER, env.DB_PASSWORD, {
   host: env.DB_HOST,
@@ -20,4 +20,4 @@ const sequelize = new Sequelize(env.DB_NAME, env.DB_USER, env.DB_PASSWORD, {
   },
 });
 
-module.exports = sequelize;
+export default sequelize;

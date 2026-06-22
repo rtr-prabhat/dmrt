@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
-const warehouseService = require('../services/warehouse.service');
+import Joi from 'joi';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
+import * as warehouseService from '../services/warehouse.service.js';
 
 const listSchema = Joi.object({
   page:     Joi.number().integer().min(1).default(1),
@@ -115,4 +115,4 @@ const upsertInventory = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { list, getById, create, update, remove, getInventory, upsertInventory };
+export { list, getById, create, update, remove, getInventory, upsertInventory };

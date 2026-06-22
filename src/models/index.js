@@ -1,23 +1,23 @@
-const sequelize = require('../config/database');
+import sequelize from '../config/database.js';
 
-const User             = require('./User');
-const Role             = require('./Role');
-const Permission       = require('./Permission');
-const UserRole         = require('./UserRole');
-const RolePermission   = require('./RolePermission');
-const RefreshToken     = require('./RefreshToken');
-const Category         = require('./Category');
-const Product          = require('./Product');
-const ProductVariation = require('./ProductVariation');
-const Warehouse        = require('./Warehouse');
-const WarehouseInventory = require('./WarehouseInventory');
-const Cart             = require('./Cart');
-const CartItem         = require('./CartItem');
-const Wishlist         = require('./Wishlist');
-const WishlistItem     = require('./WishlistItem');
-const Order            = require('./Order');
-const OrderItem        = require('./OrderItem');
-const Address          = require('./Address');
+import User from './User.js';
+import Role from './Role.js';
+import Permission from './Permission.js';
+import UserRole from './UserRole.js';
+import RolePermission from './RolePermission.js';
+import RefreshToken from './RefreshToken.js';
+import Category from './Category.js';
+import Product from './Product.js';
+import ProductVariation from './ProductVariation.js';
+import Warehouse from './Warehouse.js';
+import WarehouseInventory from './WarehouseInventory.js';
+import Cart from './Cart.js';
+import CartItem from './CartItem.js';
+import Wishlist from './Wishlist.js';
+import WishlistItem from './WishlistItem.js';
+import Order from './Order.js';
+import OrderItem from './OrderItem.js';
+import Address from './Address.js';
 
 // ── RBAC ──────────────────────────────────────────────────────────────
 User.belongsToMany(Role, { through: UserRole, foreignKey: 'userId', otherKey: 'roleId', as: 'roles' });
@@ -76,7 +76,7 @@ User.hasMany(Address, { as: 'addresses', foreignKey: 'userId' });
 Address.belongsTo(User, { foreignKey: 'userId' });
 Address.hasMany(Order, { foreignKey: 'addressId' });
 
-module.exports = {
+export {
   sequelize,
   User,
   Role,

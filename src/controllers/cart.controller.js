@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const cartService = require('../services/cart.service');
-const { AppError } = require('../utils/AppError');
-const asyncWrap = require('../utils/asyncWrap');
+import Joi from 'joi';
+import * as cartService from '../services/cart.service.js';
+import { AppError } from '../utils/AppError.js';
+import asyncWrap from '../utils/asyncWrap.js';
 
 const addItemSchema = Joi.object({
   variationId: Joi.number().integer().positive().required(),
@@ -66,4 +66,4 @@ const clearCart = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { getCart, addItem, updateItem, removeItem, clearCart };
+export { getCart, addItem, updateItem, removeItem, clearCart };

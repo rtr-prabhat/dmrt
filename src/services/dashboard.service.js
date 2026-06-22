@@ -1,4 +1,5 @@
-const { sequelize } = require('../models');
+import { sequelize } from '../models/index.js';
+import { AppError } from '../utils/AppError.js';
 
 const getSummary = async () => {
   try {
@@ -72,6 +73,7 @@ const getSummary = async () => {
       },
     };
   } catch (error) {
+    console.log('Error in dashboard.getSummary:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch dashboard summary', 500);
   }
@@ -84,6 +86,7 @@ const getOrdersByStatus = async () => {
       { type: sequelize.QueryTypes.SELECT }
     );
   } catch (error) {
+    console.log('Error in dashboard.getOrdersByStatus:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch orders by status', 500);
   }
@@ -106,6 +109,7 @@ const getTopProducts = async (period) => {
       { replacements: [days], type: sequelize.QueryTypes.SELECT }
     );
   } catch (error) {
+    console.log('Error in dashboard.getTopProducts:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch top products', 500);
   }
@@ -127,6 +131,7 @@ const getLowStock = async () => {
       { type: sequelize.QueryTypes.SELECT }
     );
   } catch (error) {
+    console.log('Error in dashboard.getLowStock:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch low stock items', 500);
   }
@@ -146,9 +151,10 @@ const getRevenue = async () => {
       { type: sequelize.QueryTypes.SELECT }
     );
   } catch (error) {
+    console.log('Error in dashboard.getRevenue:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch revenue data', 500);
   }
 };
 
-module.exports = { getSummary, getOrdersByStatus, getTopProducts, getLowStock, getRevenue };
+export { getSummary, getOrdersByStatus, getTopProducts, getLowStock, getRevenue };

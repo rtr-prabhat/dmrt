@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
-const variationService = require('../services/variation.service');
+import Joi from 'joi';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
+import * as variationService from '../services/variation.service.js';
 
 const createSchema = Joi.object({
   skuSuffix:  Joi.string().max(50).required(),
@@ -73,4 +73,4 @@ const remove = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { list, getById, create, update, remove };
+export { list, getById, create, update, remove };

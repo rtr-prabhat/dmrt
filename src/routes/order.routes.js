@@ -1,13 +1,13 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authenticate = require('../middleware/authenticate');
-const authorize = require('../middleware/authorize');
-const c = require('../controllers/order.controller');
 
-router.post('/', authenticate, authorize('order', 'create'), c.create);
-router.get('/', authenticate, c.list);
-router.get('/:id', authenticate, c.getById);
-router.patch('/:id/status', authenticate, authorize('order', 'update'), c.updateStatus);
-router.post('/:id/cancel', authenticate, c.cancel);
+import authenticate from '../middleware/authenticate.js';
+import { create, list, getById, updateStatus, cancel } from '../controllers/order.controller.js';
 
-module.exports = router;
+router.post('/',      authenticate, create);
+router.get('/',       authenticate, list);
+router.get('/:id',    authenticate, getById);
+router.patch('/:id/cancel', authenticate, cancel);
+router.patch('/:id/status', authenticate, updateStatus);
+
+export default router;

@@ -1,16 +1,18 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authenticate = require('../middleware/authenticate');
-const authorize = require('../middleware/authorize');
-const c = require('../controllers/category.controller');
 
-router.get('/', c.list);
-router.get('/tree', c.tree);
-router.get('/:id', c.getById);
-router.get('/:id/descendants', c.getDescendants);
+import authenticate from '../middleware/authenticate.js';
+import authorize from '../middleware/authorize.js';
+import upload from '../middleware/upload.js';
+import { list, tree, getById, getDescendants, create, update, remove } from '../controllers/category.controller.js';
 
-router.post('/', authenticate, authorize('category', 'create'), c.create);
-router.patch('/:id', authenticate, authorize('category', 'update'), c.update);
-router.delete('/:id', authenticate, authorize('category', 'delete'), c.remove);
+router.get('/', list);
+router.get('/tree', tree);
+router.get('/:id', getById);
+router.get('/:id/descendants', getDescendants);
 
-module.exports = router;
+router.post('/',    authenticate, authorize('category', 'create'), upload.single('image'), create);
+router.patch('/:id', authenticate, authorize('category', 'update'), upload.single('image'), update);
+router.delete('/:id', authenticate, authorize('category', 'delete'), remove);
+
+export default router;

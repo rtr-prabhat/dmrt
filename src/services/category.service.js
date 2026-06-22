@@ -1,8 +1,8 @@
-const { Op } = require('sequelize');
-const { Category, sequelize } = require('../models');
-const { AppError } = require('../utils/AppError');
-const { paginate, paginateMeta } = require('../utils/paginate');
-const slugify = require('../utils/slugify');
+import { Op } from 'sequelize';
+import { Category, sequelize } from '../models/index.js';
+import { AppError } from '../utils/AppError.js';
+import { paginate, paginateMeta } from '../utils/paginate.js';
+import slugify from '../utils/slugify.js';
 
 const list = async ({ page, limit, isActive } = {}) => {
   try {
@@ -20,6 +20,7 @@ const list = async ({ page, limit, isActive } = {}) => {
 
     return { data: rows, meta: paginateMeta(page, limit, count) };
   } catch (error) {
+    console.log('Error in category.list:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to list categories', 500);
   }
@@ -47,6 +48,7 @@ const tree = async () => {
 
     return roots;
   } catch (error) {
+    console.log('Error in category.tree:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to build category tree', 500);
   }
@@ -70,6 +72,7 @@ const getById = async (id) => {
 
     return { ...category.toJSON(), breadcrumb };
   } catch (error) {
+    console.log('Error in category.getById:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch category', 500);
   }
@@ -88,12 +91,13 @@ const getDescendants = async (id) => {
       { replacements: [id], type: sequelize.QueryTypes.SELECT },
     );
   } catch (error) {
+    console.log('Error in category.getDescendants:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch category descendants', 500);
   }
 };
 
-const create = async ({ name, parentId = null, sortOrder = 0 }) => {
+const create = async ({ name, slug: customSlug, parentId = null, sortOrder = 0, image = null }) => {
   let depth = 0;
   if (parentId) {
     const parent = await Category.findByPk(parentId);
@@ -101,11 +105,11 @@ const create = async ({ name, parentId = null, sortOrder = 0 }) => {
     depth = parent.depth + 1;
   }
 
-  const slug = slugify(name);
-
+  const slug = customSlug || slugify(name);
+  
   const t = await sequelize.transaction();
   try {
-    const category = await Category.create({ name, slug, parentId, sortOrder, depth }, { transaction: t });
+    const category = await Category.create({ name, slug, parentId, sortOrder, depth, image }, { transaction: t });
 
     if (parentId) {
       await sequelize.query(
@@ -125,11 +129,13 @@ const create = async ({ name, parentId = null, sortOrder = 0 }) => {
     return category;
   } catch (err) {
     await t.rollback();
-    throw err;
+    console.log('Error in category.create:',  err);
+    if (err instanceof AppError) throw err;
+    throw new AppError('Failed to create category', 500);
   }
 };
 
-const update = async (id, { name, sortOrder, isActive }) => {
+const update = async (id, { name, sortOrder, isActive, image }) => {
   try {
     const category = await Category.findByPk(id);
     if (!category) throw new AppError('Category not found', 404, 'NOT_FOUND');
@@ -141,10 +147,12 @@ const update = async (id, { name, sortOrder, isActive }) => {
     }
     if (sortOrder !== undefined) updates.sortOrder = sortOrder;
     if (isActive !== undefined) updates.isActive = isActive;
+    if (image !== undefined) updates.image = image || null;
 
     await category.update(updates);
     return category;
   } catch (error) {
+    console.log('Error in category.update:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to update category', 500);
   }
@@ -163,9 +171,10 @@ const remove = async (id) => {
 
     await category.destroy();
   } catch (error) {
+    console.log('Error in category.remove:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to delete category', 500);
   }
 };
 
-module.exports = { list, tree, getById, getDescendants, create, update, remove };
+export { list, tree, getById, getDescendants, create, update, remove };

@@ -1,22 +1,22 @@
-const express = require('express');
-const router = express.Router({ mergeParams: true });
-const authenticate = require('../middleware/authenticate');
-const authorize = require('../middleware/authorize');
-const productCtrl = require('../controllers/product.controller');
-const variationCtrl = require('../controllers/variation.controller');
+import express from 'express';
+const router = express.Router();
 
-// Products
-router.get('/', productCtrl.list);
-router.get('/:id([0-9]+)', productCtrl.getById);
-router.post('/', authenticate, authorize('product', 'create'), productCtrl.create);
-router.patch('/:id([0-9]+)', authenticate, authorize('product', 'update'), productCtrl.update);
-router.delete('/:id([0-9]+)', authenticate, authorize('product', 'delete'), productCtrl.remove);
+import authenticate from '../middleware/authenticate.js';
+import authorize from '../middleware/authorize.js';
+import { list as productList, getById as productGetById, create as productCreate, update as productUpdate, remove as productRemove } from '../controllers/product.controller.js';
+import { list as variationList, getById as variationGetById, create as variationCreate, update as variationUpdate, remove as variationRemove } from '../controllers/variation.controller.js';
 
-// Variations nested under product
-router.get('/:productId/variations', variationCtrl.list);
-router.get('/:productId/variations/:id', variationCtrl.getById);
-router.post('/:productId/variations', authenticate, authorize('product_variation', 'create'), variationCtrl.create);
-router.patch('/:productId/variations/:id', authenticate, authorize('product_variation', 'update'), variationCtrl.update);
-router.delete('/:productId/variations/:id', authenticate, authorize('product_variation', 'delete'), variationCtrl.remove);
+router.get('/',           productList);
+router.get('/:id',        productGetById);
+router.post('/',          authenticate, authorize('product', 'create'), productCreate);
+router.patch('/:id',      authenticate, authorize('product', 'update'), productUpdate);
+router.delete('/:id',     authenticate, authorize('product', 'delete'), productRemove);
 
-module.exports = router;
+// ── Variations ───────────────────────────────────────────────
+router.get('/:productId/variations',             variationList);
+router.get('/:productId/variations/:id',         variationGetById);
+router.post('/:productId/variations',            authenticate, authorize('product_variation', 'create'), variationCreate);
+router.patch('/:productId/variations/:id',       authenticate, authorize('product_variation', 'update'), variationUpdate);
+router.delete('/:productId/variations/:id',      authenticate, authorize('product_variation', 'delete'), variationRemove);
+
+export default router;

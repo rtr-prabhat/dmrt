@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
-const productService = require('../services/product.service');
+import Joi from 'joi';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
+import * as productService from '../services/product.service.js';
 
 const PRODUCT_TYPES = ['electronics', 'food', 'clothing', 'washing', 'medicine', 'chemical', 'other'];
 const STATUSES = ['draft', 'active', 'discontinued'];
@@ -100,4 +100,4 @@ const remove = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { list, getById, create, update, remove };
+export { list, getById, create, update, remove };

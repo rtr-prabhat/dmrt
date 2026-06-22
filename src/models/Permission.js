@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const Permission = sequelize.define('Permission', {
   id:       { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
@@ -11,4 +11,4 @@ const Permission = sequelize.define('Permission', {
   updatedAt:  false,
 });
 
-module.exports = Permission;
+export default Permission;

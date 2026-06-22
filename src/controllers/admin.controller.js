@@ -1,8 +1,8 @@
-const Joi = require('joi');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
-const userService = require('../services/user.service');
-const orderService = require('../services/order.service');
+import Joi from 'joi';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
+import * as userService from '../services/user.service.js';
+import * as orderService from '../services/order.service.js';
 
 const listUsers = asyncWrap(async (req, res) => {
   try {
@@ -134,7 +134,7 @@ const updateOrderStatus = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = {
+export {
   listUsers, getUserById, createUser, updateUser, deleteUser, setRoles,
   listOrders, getOrderById, updateOrderStatus,
 };

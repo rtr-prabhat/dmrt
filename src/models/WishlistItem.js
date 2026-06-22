@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const WishlistItem = sequelize.define('WishlistItem', {
   id:         { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
@@ -12,4 +12,4 @@ const WishlistItem = sequelize.define('WishlistItem', {
   indexes: [{ unique: true, fields: ['wishlist_id', 'product_id'] }],
 });
 
-module.exports = WishlistItem;
+export default WishlistItem;

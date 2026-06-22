@@ -1,7 +1,7 @@
-const { Warehouse, WarehouseInventory, ProductVariation, Product } = require('../models');
-const { sequelize } = require('../models');
-const { AppError } = require('../utils/AppError');
-const { paginate, paginateMeta } = require('../utils/paginate');
+import { Warehouse, WarehouseInventory, ProductVariation, Product } from '../models/index.js';
+import { sequelize } from '../models/index.js';
+import { AppError } from '../utils/AppError.js';
+import { paginate, paginateMeta } from '../utils/paginate.js';
 
 const list = async ({ page = 1, limit = 20, isActive } = {}) => {
   try {
@@ -11,6 +11,7 @@ const list = async ({ page = 1, limit = 20, isActive } = {}) => {
     const { rows, count } = await Warehouse.findAndCountAll({ where, limit, offset, order: [['name', 'ASC']] });
     return { warehouses: rows, meta: paginateMeta(page, limit, count) };
   } catch (error) {
+    console.log('Error in warehouse.list:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to list warehouses', 500);
   }
@@ -22,6 +23,7 @@ const getById = async (id) => {
     if (!wh) throw new AppError('Warehouse not found', 404, 'NOT_FOUND');
     return wh;
   } catch (error) {
+    console.log('Error in warehouse.getById:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch warehouse', 500);
   }
@@ -33,6 +35,7 @@ const create = async (data) => {
     if (existing) throw new AppError('Warehouse code already exists', 409, 'CONFLICT');
     return Warehouse.create(data);
   } catch (error) {
+    console.log('Error in warehouse.create:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to create warehouse', 500);
   }
@@ -45,6 +48,7 @@ const update = async (id, data) => {
     await wh.update(data);
     return wh;
   } catch (error) {
+    console.log('Error in warehouse.update:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to update warehouse', 500);
   }
@@ -56,6 +60,7 @@ const remove = async (id) => {
     if (!wh) throw new AppError('Warehouse not found', 404, 'NOT_FOUND');
     await wh.destroy();
   } catch (error) {
+    console.log('Error in warehouse.remove:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to delete warehouse', 500);
   }
@@ -74,6 +79,7 @@ const getInventory = async (warehouseId) => {
       order: [['quantity', 'ASC']],
     });
   } catch (error) {
+    console.log('Error in warehouse.getInventory:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch warehouse inventory', 500);
   }
@@ -95,9 +101,10 @@ const upsertInventory = async (warehouseId, items) => {
     );
     return getInventory(warehouseId);
   } catch (error) {
+    console.log('Error in warehouse.upsertInventory:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to upsert warehouse inventory', 500);
   }
 };
 
-module.exports = { list, getById, create, update, remove, getInventory, upsertInventory };
+export { list, getById, create, update, remove, getInventory, upsertInventory };

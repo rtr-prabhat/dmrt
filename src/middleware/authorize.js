@@ -1,4 +1,4 @@
-const { AppError } = require('../utils/AppError');
+import { AppError } from '../utils/AppError.js';
 
 /**
  * RBAC authorization middleware factory.
@@ -6,14 +6,13 @@ const { AppError } = require('../utils/AppError');
  * Usage:
  *   router.delete('/:id', authenticate, authorize('product', 'delete'), controller.remove)
  */
-function authorize(resource, action) {
+export default function authorize(resource, action) {
   return function (req, _res, next) {
     const permissions = req.user?.permissions ?? [];
-    // console.log(permissions,'permisssionnnnnnn')
     const allowed = permissions.some(
       (p) => p.resource === resource && p.action === action
     );
-// console.log(allowed,'allowedddddddd')
+
     if (!allowed) {
       return next(
         new AppError(
@@ -25,5 +24,3 @@ function authorize(resource, action) {
     next();
   };
 }
-
-module.exports = authorize;

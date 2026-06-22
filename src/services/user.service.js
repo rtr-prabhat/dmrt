@@ -1,8 +1,8 @@
-const bcrypt = require('bcrypt');
-const { Op } = require('sequelize');
-const { User, Role, UserRole } = require('../models');
-const { AppError } = require('../utils/AppError');
-const { paginate, paginateMeta } = require('../utils/paginate');
+import bcrypt from 'bcrypt';
+import { Op } from 'sequelize';
+import { User, Role, UserRole } from '../models/index.js';
+import { AppError } from '../utils/AppError.js';
+import { paginate, paginateMeta } from '../utils/paginate.js';
 
 const SALT_ROUNDS = 10;
 
@@ -14,6 +14,7 @@ const getMe = async (userId) => {
     if (!user) throw new AppError('User not found', 404, 'NOT_FOUND');
     return user;
   } catch (error) {
+    console.log('Error in user.getMe:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch user', 500);
   }
@@ -27,6 +28,7 @@ const updateMe = async (userId, fields) => {
     const { passwordHash, deletedAt, ...data } = user.toJSON();
     return data;
   } catch (error) {
+    console.log('Error in user.updateMe:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to update profile', 500);
   }
@@ -43,6 +45,7 @@ const changePassword = async (userId, { currentPassword, newPassword }) => {
     const passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
     await user.update({ passwordHash });
   } catch (error) {
+    console.log('Error in user.changePassword:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to change password', 500);
   }
@@ -66,6 +69,7 @@ const list = async ({ page, limit, search }) => {
 
     return { users: rows, meta: paginateMeta(page, limit, count) };
   } catch (error) {
+    console.log('Error in user.list:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to list users', 500);
   }
@@ -80,6 +84,7 @@ const getById = async (id) => {
     if (!user) throw new AppError('User not found', 404, 'NOT_FOUND');
     return user;
   } catch (error) {
+    console.log('Error in user.getById:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch user', 500);
   }
@@ -98,6 +103,7 @@ const create = async ({ fullName, email, password, roles }, actorId) => {
 
     return getById(user.id);
   } catch (error) {
+    console.log('Error in user.create:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to create user', 500);
   }
@@ -110,6 +116,7 @@ const update = async (id, fields) => {
     await user.update(fields);
     return getById(id);
   } catch (error) {
+    console.log('Error in user.update:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to update user', 500);
   }
@@ -122,6 +129,7 @@ const remove = async (id, actorId) => {
     if (!user) throw new AppError('User not found', 404, 'NOT_FOUND');
     await user.destroy();
   } catch (error) {
+    console.log('Error in user.remove:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to delete user', 500);
   }
@@ -140,9 +148,10 @@ const setRoles = async (id, roleNames, actorId) => {
 
     return getById(id);
   } catch (error) {
+    console.log('Error in user.setRoles:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to set user roles', 500);
   }
 };
 
-module.exports = { getMe, updateMe, changePassword, list, getById, create, update, remove, setRoles };
+export { getMe, updateMe, changePassword, list, getById, create, update, remove, setRoles };

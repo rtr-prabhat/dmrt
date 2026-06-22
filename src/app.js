@@ -1,14 +1,19 @@
-const express    = require('express');
-const helmet     = require('helmet');
-const cors       = require('cors');
-const pinoHttp   = require('pino-http');
-const rateLimit  = require('express-rate-limit');
+import { fileURLToPath } from 'url';
+import path       from 'path';
+import express    from 'express';
+import helmet     from 'helmet';
+import cors       from 'cors';
+import pinoHttp   from 'pino-http';
+import rateLimit  from 'express-rate-limit';
 
-const env          = require('./config/env');
-const logger       = require('./utils/logger');
-const errorHandler = require('./middleware/errorHandler');
-const { AppError } = require('./utils/AppError');
-const apiRouter    = require('./routes/index');
+import env          from './config/env.js';
+import logger       from './utils/logger.js';
+import errorHandler from './middleware/errorHandler.js';
+import { AppError } from './utils/AppError.js';
+import apiRouter    from './routes/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -26,6 +31,9 @@ app.use(cors({
 
 // ── Logging ───────────────────────────────────────────────────
 // app.use(pinoHttp({ logger }));
+
+// ── Serve uploaded files ─────────────────────────────────────
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // ── Body parsing ──────────────────────────────────────────────
 app.use(express.json({ limit: '1mb' }));
@@ -65,7 +73,7 @@ app.use((_req, _res, next) => next(new AppError('Route not found', 404)));
 app.use(errorHandler);
 
 // ── Start ─────────────────────────────────────────────────────
-if (require.main === module) {
+if (process.argv[1] === __filename) {
   app.listen(env.PORT, () => {
     logger.info(`Server running on port ${env.PORT} [${env.NODE_ENV}]`);
   });
@@ -75,5 +83,4 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-
-module.exports = app;
+export default app;

@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const authService = require('../services/auth.service');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
+import Joi from 'joi';
+import * as authService from '../services/auth.service.js';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
 
 const registerSchema = Joi.object({
   fullName: Joi.string().min(2).max(100).required(),
@@ -84,4 +84,4 @@ const logoutAll = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { register, login, refresh, logout, logoutAll };
+export { register, login, refresh, logout, logoutAll };

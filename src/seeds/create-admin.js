@@ -1,6 +1,6 @@
-require('dotenv').config();
-const bcrypt = require('bcrypt');
-const { sequelize, User, Role, UserRole } = require('../models');
+import 'dotenv/config';
+import bcrypt from 'bcrypt';
+import { sequelize, User, Role, UserRole } from '../models/index.js';
 
 const SALT_ROUNDS = 10;
 

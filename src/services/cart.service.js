@@ -1,5 +1,5 @@
-const { Cart, CartItem, ProductVariation, Product, WarehouseInventory } = require('../models');
-const { AppError } = require('../utils/AppError');
+import { Cart, CartItem, ProductVariation, Product, WarehouseInventory } from '../models/index.js';
+import { AppError } from '../utils/AppError.js';
 
 const fetchCart = async (userId) => {
   try {
@@ -47,6 +47,7 @@ const fetchCart = async (userId) => {
       itemCount: items.length,
     };
   } catch (error) {
+    console.log('Error in cart.fetchCart:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch cart', 500);
   }
@@ -56,6 +57,7 @@ const getCart = async (userId) => {
   try {
     return fetchCart(userId);
   } catch (error) {
+    console.log('Error in cart.getCart:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to get cart', 500);
   }
@@ -97,6 +99,7 @@ const addItem = async (userId, { variationId, quantity }) => {
 
     return fetchCart(userId);
   } catch (error) {
+    console.log('Error in cart.addItem:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to add item to cart', 500);
   }
@@ -124,6 +127,7 @@ const updateItem = async (userId, itemId, { quantity }) => {
     await item.update({ quantity });
     return fetchCart(userId);
   } catch (error) {
+    console.log('Error in cart.updateItem:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to update cart item', 500);
   }
@@ -138,6 +142,7 @@ const removeItem = async (userId, itemId) => {
     await item.destroy();
     return fetchCart(userId);
   } catch (error) {
+    console.log('Error in cart.removeItem:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to remove cart item', 500);
   }
@@ -148,9 +153,10 @@ const clearCart = async (userId) => {
     const cart = await Cart.findOne({ where: { userId } });
     if (cart) await CartItem.destroy({ where: { cartId: cart.id } });
   } catch (error) {
+    console.log('Error in cart.clearCart:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to clear cart', 500);
   }
 };
 
-module.exports = { getCart, addItem, updateItem, removeItem, clearCart };
+export { getCart, addItem, updateItem, removeItem, clearCart };

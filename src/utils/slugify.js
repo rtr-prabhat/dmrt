@@ -1,4 +1,4 @@
-function slugify(text) {
+export default function slugify(text) {
   return text
     .toString()
     .toLowerCase()
@@ -7,5 +7,3 @@ function slugify(text) {
     .replace(/[^\w-]+/g, '')
     .replace(/--+/g, '-');
 }
-
-module.exports = slugify;

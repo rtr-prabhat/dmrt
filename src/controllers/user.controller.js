@@ -1,7 +1,7 @@
-const Joi = require('joi');
-const userService = require('../services/user.service');
-const asyncWrap = require('../utils/asyncWrap');
-const { AppError } = require('../utils/AppError');
+import Joi from 'joi';
+import * as userService from '../services/user.service.js';
+import asyncWrap from '../utils/asyncWrap.js';
+import { AppError } from '../utils/AppError.js';
 
 const updateMeSchema = Joi.object({
   fullName: Joi.string().min(2).max(100),
@@ -144,4 +144,4 @@ const setRoles = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { getMe, updateMe, changePassword, list, getById, create, update, remove, setRoles };
+export { getMe, updateMe, changePassword, list, getById, create, update, remove, setRoles };

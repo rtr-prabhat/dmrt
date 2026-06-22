@@ -1,13 +1,14 @@
-const express    = require('express');
-const router     = express.Router();
-const authenticate = require('../middleware/authenticate');
-const authorize    = require('../middleware/authorize');
-const c            = require('../controllers/dashboard.controller');
+import express from 'express';
+const router = express.Router();
 
-router.get('/summary',          authenticate, authorize('dashboard', 'read'), c.getSummary);
-router.get('/orders-by-status', authenticate, authorize('dashboard', 'read'), c.getOrdersByStatus);
-router.get('/top-products',     authenticate, authorize('dashboard', 'read'), c.getTopProducts);
-router.get('/low-stock',        authenticate, authorize('dashboard', 'read'), c.getLowStock);
-router.get('/revenue',          authenticate, authorize('dashboard', 'read'), c.getRevenue);
+import authenticate from '../middleware/authenticate.js';
+import authorize from '../middleware/authorize.js';
+import { getSummary, getOrdersByStatus, getTopProducts, getLowStock, getRevenue } from '../controllers/dashboard.controller.js';
 
-module.exports = router;
+router.get('/summary',          authenticate, authorize('dashboard', 'read'), getSummary);
+router.get('/orders-by-status', authenticate, authorize('dashboard', 'read'), getOrdersByStatus);
+router.get('/top-products',     authenticate, authorize('dashboard', 'read'), getTopProducts);
+router.get('/low-stock',        authenticate, authorize('dashboard', 'read'), getLowStock);
+router.get('/revenue',          authenticate, authorize('dashboard', 'read'), getRevenue);
+
+export default router;

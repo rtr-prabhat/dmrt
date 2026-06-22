@@ -1,18 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authenticate = require('../middleware/authenticate');
-const authorize = require('../middleware/authorize');
-const c = require('../controllers/user.controller');
 
-router.get('/me', authenticate, c.getMe);
-router.patch('/me', authenticate, c.updateMe);
-router.patch('/me/password', authenticate, c.changePassword);
+import authenticate from '../middleware/authenticate.js';
+import { getMe, updateMe, changePassword } from '../controllers/user.controller.js';
 
-router.get('/', authenticate, authorize('user', 'read'), c.list);
-router.get('/:id', authenticate, authorize('user', 'read'), c.getById);
-router.post('/', authenticate, authorize('user', 'create'), c.create);
-router.patch('/:id', authenticate, authorize('user', 'update'), c.update);
-router.delete('/:id', authenticate, authorize('user', 'delete'), c.remove);
-router.put('/:id/roles', authenticate, authorize('user', 'update'), c.setRoles);
+router.get('/me',     authenticate, getMe);
+router.patch('/me',   authenticate, updateMe);
+router.patch('/password', authenticate, changePassword);
 
-module.exports = router;
+export default router;

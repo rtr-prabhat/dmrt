@@ -1,10 +1,10 @@
-const { Op } = require('sequelize');
-const {
+import { Op } from 'sequelize';
+import {
   Order, OrderItem, Cart, CartItem, ProductVariation, Product,
   Address, WarehouseInventory, sequelize,
-} = require('../models');
-const { AppError } = require('../utils/AppError');
-const { paginate, paginateMeta } = require('../utils/paginate');
+} from '../models/index.js';
+import { AppError } from '../utils/AppError.js';
+import { paginate, paginateMeta } from '../utils/paginate.js';
 
 const getById = async (userId, id, checkOwnership = true) => {
   try {
@@ -22,6 +22,7 @@ const getById = async (userId, id, checkOwnership = true) => {
     if (!order) throw new AppError('Order not found', 404, 'NOT_FOUND');
     return order;
   } catch (error) {
+    console.log('Error in order.getById:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch order', 500);
   }
@@ -47,7 +48,6 @@ const create = async (userId, { addressId, notes }) => {
 
     if (!cart || !cart.items.length) throw new AppError('Cart is empty', 400, 'BAD_REQUEST');
 
-    // Validate + compute totals before opening transaction
     let subtotal = 0;
     let taxAmount = 0;
     const orderItemsData = [];
@@ -56,12 +56,12 @@ const create = async (userId, { addressId, notes }) => {
       const { variation } = item;
       const product = variation?.product;
       if (!product || product.status !== 'active') {
-        throw new AppError(`Product "${product?.name}" is no longer available`, 400, 'BAD_REQUEST');
+        throw new AppError(`Product \"${product?.name}\" is no longer available`, 400, 'BAD_REQUEST');
       }
 
       const stock = await WarehouseInventory.sum('quantity', { where: { variationId: item.variationId } });
       if (!stock || stock < item.quantity) {
-        throw new AppError(`Insufficient stock for "${product.name}"`, 400, 'OUT_OF_STOCK');
+        throw new AppError(`Insufficient stock for \"${product.name}\"`, 400, 'OUT_OF_STOCK');
       }
 
       const unitPrice = parseFloat(item.priceAtAdd);
@@ -82,7 +82,6 @@ const create = async (userId, { addressId, notes }) => {
 
     const total = subtotal + taxAmount;
 
-    // Run DB writes in a transaction; capture the new order id
     const newOrderId = await sequelize.transaction(async (t) => {
       const order = await Order.create({
         userId,
@@ -99,7 +98,6 @@ const create = async (userId, { addressId, notes }) => {
         { transaction: t }
       );
 
-      // Deduct from warehouse with lowest stock first
       for (const item of cart.items) {
         const inv = await WarehouseInventory.findOne({
           where: { variationId: item.variationId, quantity: { [Op.gte]: item.quantity } },
@@ -116,9 +114,9 @@ const create = async (userId, { addressId, notes }) => {
       return order.id;
     });
 
-    // Fetch the committed order after transaction completes
     return getById(userId, newOrderId, false);
   } catch (error) {
+    console.log('Error in order.create:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to create order', 500);
   }
@@ -145,6 +143,7 @@ const list = async (userId, isAdmin, { page, limit, status }) => {
 
     return { orders: rows, meta: paginateMeta(page, limit, count) };
   } catch (error) {
+    console.log('Error in order.list:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to list orders', 500);
   }
@@ -166,12 +165,13 @@ const updateStatus = async (id, { status }) => {
 
     const allowed = VALID_TRANSITIONS[order.status] || [];
     if (!allowed.includes(status)) {
-      throw new AppError(`Cannot transition from "${order.status}" to "${status}"`, 400, 'BAD_REQUEST');
+      throw new AppError(`Cannot transition from \"${order.status}\" to \"${status}\"`, 400, 'BAD_REQUEST');
     }
 
     await order.update({ status });
     return getById(null, id, false);
   } catch (error) {
+    console.log('Error in order.updateStatus:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to update order status', 500);
   }
@@ -187,9 +187,10 @@ const cancel = async (userId, id) => {
     await order.update({ status: 'cancelled' });
     return getById(userId, id);
   } catch (error) {
+    console.log('Error in order.cancel:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to cancel order', 500);
   }
 };
 
-module.exports = { create, list, getById, updateStatus, cancel };
+export { create, list, getById, updateStatus, cancel };

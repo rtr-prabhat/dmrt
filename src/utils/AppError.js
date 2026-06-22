@@ -7,7 +7,7 @@ const HTTP_CODES = {
   422: 'UNPROCESSABLE_ENTITY',
 };
 
-class AppError extends Error {
+export class AppError extends Error {
   constructor(message, statusCode = 500, code) {
     super(message);
     this.statusCode    = statusCode;
@@ -15,5 +15,3 @@ class AppError extends Error {
     this.code          = code ?? HTTP_CODES[statusCode] ?? 'INTERNAL_SERVER_ERROR';
   }
 }
-
-module.exports = { AppError };

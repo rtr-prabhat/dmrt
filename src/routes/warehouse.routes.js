@@ -1,15 +1,17 @@
-const express    = require('express');
-const router     = express.Router();
-const authenticate = require('../middleware/authenticate');
-const authorize    = require('../middleware/authorize');
-const c            = require('../controllers/warehouse.controller');
+import express from 'express';
+const router = express.Router();
 
-router.get('/',                 authenticate, authorize('warehouse', 'read'),   c.list);
-router.get('/:id',              authenticate, authorize('warehouse', 'read'),   c.getById);
-router.post('/',                authenticate, authorize('warehouse', 'create'), c.create);
-router.patch('/:id',            authenticate, authorize('warehouse', 'update'), c.update);
-router.delete('/:id',           authenticate, authorize('warehouse', 'delete'), c.remove);
-router.get('/:id/inventory',    authenticate, authorize('warehouse', 'read'),   c.getInventory);
-router.put('/:id/inventory',    authenticate, authorize('warehouse', 'update'), c.upsertInventory);
+import authenticate from '../middleware/authenticate.js';
+import authorize from '../middleware/authorize.js';
+import { list, getById, create, update, remove, getInventory, upsertInventory } from '../controllers/warehouse.controller.js';
 
-module.exports = router;
+router.get('/',                        list);
+router.get('/:id',                     getById);
+router.post('/',                       authenticate, authorize('warehouse', 'create'), create);
+router.patch('/:id',                    authenticate, authorize('warehouse', 'update'), update);
+router.delete('/:id',                   authenticate, authorize('warehouse', 'delete'), remove);
+
+router.get('/:id/inventory',           getInventory);
+router.put('/:id/inventory',           authenticate, authorize('warehouse', 'update'), upsertInventory);
+
+export default router;

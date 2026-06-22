@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/database.js';
 
 const CartItem = sequelize.define('CartItem', {
   id:          { type: DataTypes.INTEGER.UNSIGNED, primaryKey: true, autoIncrement: true },
@@ -12,4 +12,4 @@ const CartItem = sequelize.define('CartItem', {
   underscored: true,
 });
 
-module.exports = CartItem;
+export default CartItem;

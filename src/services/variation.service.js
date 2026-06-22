@@ -1,5 +1,5 @@
-const { ProductVariation, Product } = require('../models');
-const { AppError } = require('../utils/AppError');
+import { ProductVariation, Product } from '../models/index.js';
+import { AppError } from '../utils/AppError.js';
 
 const list = async (productId) => {
   try {
@@ -9,6 +9,7 @@ const list = async (productId) => {
       order: [['createdAt', 'ASC']],
     });
   } catch (error) {
+    console.log('Error in variation.list:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to list variations', 500);
   }
@@ -23,6 +24,7 @@ const getById = async (productId, id) => {
     if (!variation) throw new AppError('Variation not found', 404, 'NOT_FOUND');
     return variation;
   } catch (error) {
+    console.log('Error in variation.getById:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch variation', 500);
   }
@@ -38,6 +40,7 @@ const create = async (productId, { skuSuffix, attributes, priceDelta = 0, isActi
 
     return ProductVariation.create({ productId, skuSuffix, attributes, priceDelta, isActive });
   } catch (error) {
+    console.log('Error in variation.create:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to create variation', 500);
   }
@@ -55,6 +58,7 @@ const update = async (productId, id, data) => {
     await variation.update(data);
     return variation;
   } catch (error) {
+    console.log('Error in variation.update:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to update variation', 500);
   }
@@ -66,9 +70,10 @@ const remove = async (productId, id) => {
     if (!variation) throw new AppError('Variation not found', 404, 'NOT_FOUND');
     await variation.destroy();
   } catch (error) {
+    console.log('Error in variation.remove:', error.message || error);
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to delete variation', 500);
   }
 };
 
-module.exports = { list, getById, create, update, remove };
+export { list, getById, create, update, remove };
